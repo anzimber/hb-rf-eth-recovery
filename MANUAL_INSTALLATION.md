@@ -43,6 +43,55 @@ identify every differently named third-party recovery mechanism.
 Replace `192.168.1.50` in the examples with your CCU's address. Use the account
 `root`, not the WebUI administrator account.
 
+### Home Assistant add-on: enable direct OpenCCU SSH access
+
+If OpenCCU runs as a Home Assistant add-on/app, enable SSH access to OpenCCU
+itself before following the remaining installation steps:
+
+1. Create a Home Assistant backup that includes the OpenCCU add-on.
+2. In the **OpenCCU WebUI → Settings → Control panel → Security**, enable SSH
+   and set its SSH password. The SSH username is `root`; use the SSH password
+   configured in OpenCCU, not your Home Assistant or OpenCCU WebUI login.
+3. In **Home Assistant → Settings → Add-ons/Apps → OpenCCU → Configuration →
+   Network**, enable **Show disabled ports** if needed. Assign an unused host
+   port, for example **2222**, to OpenCCU's **22/tcp** port, then save.
+4. Restart the OpenCCU add-on to apply the mapping. This temporarily interrupts
+   Homematic communication. Wait for OpenCCU to finish booting.
+
+From your computer or WSL, connect to the **Home Assistant host's IP address**
+and the mapped host port. Replace `192.168.1.50` with that host's address:
+
+```sh
+ssh -p 2222 root@192.168.1.50
+```
+
+Confirm that this session is inside OpenCCU:
+
+```sh
+cat /VERSION
+ls -ld /etc/config/rc.d
+command -v monit
+```
+
+Continue with the same prerequisite checks and installation commands below.
+For this setup, replace the plain SSH connection example in this guide with
+`ssh -p 2222 root@192.168.1.50`. In section 2, transfer the verified worker
+from your computer using **uppercase `-P`** for SCP's port option:
+
+```sh
+scp -O -P 2222 hb-rf-eth-recovery root@192.168.1.50:/tmp/hb-rf-eth-recovery.new
+```
+
+All commands described as running on the CCU must run in the OpenCCU SSH
+session. A Home Assistant Terminal & SSH prompt such as `[core-ssh ~]$` belongs
+to a different container: its `/tmp` is separate, and it is not the installation
+target. No Docker commands or router port forwarding are required.
+
+The worker still belongs at `/etc/config/rc.d/hb-rf-eth-recovery` inside
+OpenCCU. That path uses the add-on's persistent storage, and OpenCCU's existing
+startup mechanism launches the executable hook. No extra cron job, WebUI
+program, or custom Monit entry is needed.
+
 ### Check whether your firmware already provides recovery
 
 Connect from your computer:

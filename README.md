@@ -6,6 +6,9 @@ sleeps in the background when the supported hardware is not detected.
 
 Follow the [manual installation guide](MANUAL_INSTALLATION.md) for prerequisites,
 verified downloads, installation, checks, rollback and removal.
+For Home Assistant add-ons, start with the guide's
+[direct OpenCCU SSH setup](MANUAL_INSTALLATION.md#home-assistant-add-on-enable-direct-openccu-ssh-access).
+
 Recovery restarts RF services and ReGa, temporarily interrupting communication
 and potentially running CCU automations. Do not install beside a built-in
 recovery service or another recovery controller.
